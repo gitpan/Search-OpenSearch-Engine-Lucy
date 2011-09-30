@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               Search-OpenSearch-Engine-Lucy
-version:            0.01
+version:            0.02
 abstract:           Lucy server with OpenSearch results
 author:
     - Peter Karman <karman@cpan.org>
