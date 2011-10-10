@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               Search-OpenSearch-Engine-Lucy
-version:            0.02
+version:            0.03
 abstract:           Lucy server with OpenSearch results
 author:
     - Peter Karman <karman@cpan.org>
@@ -12,8 +12,9 @@ build_requires:
     ExtUtils::MakeMaker:  0
 requires:
     perl:                5.008003
-    Search::OpenSearch:  0.13
-    SWISH::Prog::Lucy:   0.01
+    Search::OpenSearch:  0.14
+    SWISH::Prog:         0.53
+    SWISH::Prog::Lucy:   0.05
     Test::More:          0
 resources:
     bugtracker:  http://rt.cpan.org/NoAuth/Bugs.html?Dist=Search-OpenSearch-Engine-Lucy

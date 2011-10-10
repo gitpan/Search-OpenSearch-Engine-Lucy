@@ -5,13 +5,14 @@ use Carp;
 use base qw( Search::OpenSearch::Engine );
 use SWISH::Prog::Lucy::Indexer;
 use SWISH::Prog::Lucy::Searcher;
+use SWISH::Prog::Aggregator;
 use SWISH::Prog::Doc;
 use Lucy::Object::BitVector;
 use Lucy::Search::Collector::BitCollector;
 use Data::Dump qw( dump );
 use Scalar::Util qw( blessed );
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 sub init_searcher {
     my $self     = shift;
@@ -143,33 +144,43 @@ sub _massage_rest_req_into_doc {
     my ( $self, $req ) = @_;
 
     #dump $req;
+    my $doc;
 
     if ( !blessed($req) ) {
-        return SWISH::Prog::Doc->new(
+        $doc = SWISH::Prog::Doc->new(
             version => 3,
             %$req
         );
     }
+    else {
 
-    #dump $req->headers;
+        #dump $req->headers;
 
-    # $req should act like a HTTP::Request object.
-    my %args = (
-        version => 3,
-        url     => $req->uri->path,        # TODO test
-        content => $req->content,
-        size    => $req->content_length,
-        type    => $req->content_type,
+        # $req should act like a HTTP::Request object.
+        my %args = (
+            version => 3,
+            url     => $req->uri->path,        # TODO test
+            content => $req->content,
+            size    => $req->content_length,
+            type    => $req->content_type,
 
-        # type
-        # action
-        # parser
-        # modtime
-    );
+            # type
+            # action
+            # parser
+            # modtime
+        );
 
-    #dump \%args;
+        #dump \%args;
 
-    my $doc = SWISH::Prog::Doc->new(%args);
+        $doc = SWISH::Prog::Doc->new(%args);
+
+    }
+
+    # use set_parser_from_type so that SWISH::3 does the Right Thing
+    # instead of looking at the original mime-type.
+    my $aggregator
+        = SWISH::Prog::Aggregator->new( set_parser_from_type => 1 );
+    $aggregator->swish_filter($doc);
 
     return $doc;
 }
