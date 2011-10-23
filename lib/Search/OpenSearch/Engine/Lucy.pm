@@ -12,7 +12,7 @@ use Lucy::Search::Collector::BitCollector;
 use Data::Dump qw( dump );
 use Scalar::Util qw( blessed );
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 sub init_searcher {
     my $self     = shift;
@@ -20,6 +20,7 @@ sub init_searcher {
     my $searcher = SWISH::Prog::Lucy::Searcher->new(
         invindex => $index,
         debug    => $self->debug,
+        %{ $self->searcher_config },
     );
     if ( !$self->fields ) {
         $self->fields( $searcher->get_propnames );
@@ -47,9 +48,9 @@ sub build_facets {
     my $searcher      = $self->searcher;
     my $lucy_searcher = $searcher->{lucy};
     my $query_parser  = $searcher->{qp};
-    my $bit_vec       = KinoSearch::Object::BitVector->new(
+    my $bit_vec       = Lucy::Object::BitVector->new(
         capacity => $lucy_searcher->doc_max + 1 );
-    my $collector = KinoSearch::Search::HitCollector::BitCollector->new(
+    my $collector = Lucy::Search::Collector::BitCollector->new(
         bit_vector => $bit_vec, );
 
     $lucy_searcher->collect(
@@ -198,6 +199,7 @@ sub init_indexer {
     my $indexer = SWISH::Prog::Lucy::Indexer->new(
         invindex => $self->index->[0],
         debug    => $self->debug,
+        %{ $self->indexer_config },
     );
     return $indexer;
 }
@@ -348,6 +350,49 @@ __END__
 Search::OpenSearch::Engine::Lucy - Lucy server with OpenSearch results
 
 =head1 SYNOPSIS
+
+ use Search::OpenSearch::Engine::Lucy;
+ my $engine = Search::OpenSearch::Engine::Lucy->new(
+    index       => [qw( path/to/index1 path/to/index2 )],
+    facets      => {
+        names       => [qw( color size flavor )],
+        sample_size => 10_000,
+    },
+    fields      => [qw( color size flavor )],   # result attributes in response
+    indexer_config  => {
+        somekey => somevalue,
+    },
+    searcher_config => {
+        anotherkey => anothervalue,
+    },
+    cache           => CHI->new(
+        driver           => 'File',
+        dir_create_mode  => 0770,
+        file_create_mode => 0660,
+        root_dir         => "/tmp/opensearch_cache",
+    ),
+    cache_ttl       => 3600,
+    do_not_hilite   => [qw( color )],
+    snipper_config  => { as_sentences => 1 },        # see Search::Tools::Snipper
+    hiliter_config  => { class => 'h', tag => 'b' }, # see Search::Tools::HiLiter
+    parser_config   => {},                           # see Search::Query::Parser
+    
+ );
+ my $response = $engine->search(
+    q           => 'quick brown fox',   # query
+    s           => 'rank desc',         # sort order
+    o           => 0,                   # offset
+    p           => 25,                  # page size
+    h           => 1,                   # highlight query terms in results
+    c           => 0,                   # count total only (same as f=0 r=0)
+    L           => 'field|low|high',    # limit results to inclusive range
+    f           => 1,                   # include facets
+    r           => 1,                   # include results
+    t           => 'XML',               # or JSON
+    u           => 'http://yourdomain.foo/opensearch/',
+    b           => 'AND',               # or OR
+ );
+ print $response;
 
 =head1 METHODS
 
