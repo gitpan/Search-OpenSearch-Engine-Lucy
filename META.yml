@@ -20,6 +20,7 @@ no_index:
 requires:
   JSON: 2
   Module::Load: 0
+  Path::Class: 0
   SWISH::Prog: 0.54
   SWISH::Prog::Lucy: 0.07
   Search::OpenSearch: 0.15
@@ -30,4 +31,4 @@ resources:
   homepage: https://github.com/karpet/search-opensearch-engine-lucy-perl
   license: http://dev.perl.org/licenses/
   repository: git://github.com/karpet/search-opensearch-engine-lucy-perl.git
-version: 0.07
+version: 0.08
