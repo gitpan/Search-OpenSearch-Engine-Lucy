@@ -23,7 +23,7 @@ requires:
   Path::Class: 0
   SWISH::Prog: 0.54
   SWISH::Prog::Lucy: 0.07
-  Search::OpenSearch: 0.15
+  Search::OpenSearch: 0.18
   Test::More: 0
   perl: 5.008003
 resources:
@@ -31,4 +31,4 @@ resources:
   homepage: https://github.com/karpet/search-opensearch-engine-lucy-perl
   license: http://dev.perl.org/licenses/
   repository: git://github.com/karpet/search-opensearch-engine-lucy-perl.git
-version: 0.09
+version: 0.10
