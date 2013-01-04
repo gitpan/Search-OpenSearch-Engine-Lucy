@@ -4,7 +4,7 @@
       "Peter Karman <karman@cpan.org>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "ExtUtils::MakeMaker version 6.62, CPAN::Meta::Converter version 2.120530",
+   "generated_by" : "ExtUtils::MakeMaker version 6.62, CPAN::Meta::Converter version 2.112150",
    "license" : [
       "perl_5"
    ],
@@ -22,24 +22,24 @@
    "prereqs" : {
       "build" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : "0"
+            "ExtUtils::MakeMaker" : 0
          }
       },
       "configure" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : "0"
+            "ExtUtils::MakeMaker" : 0
          }
       },
       "runtime" : {
          "requires" : {
             "JSON" : "2",
-            "Module::Load" : "0",
-            "Path::Class" : "0",
+            "Module::Load" : 0,
+            "Path::Class" : 0,
             "SWISH::Prog" : "0.64",
             "SWISH::Prog::Lucy" : "0.11",
             "Search::OpenSearch" : "0.23",
-            "Search::Tools" : "0.83",
-            "Test::More" : "0",
+            "Search::Tools" : "0.86",
+            "Test::More" : 0,
             "perl" : "5.008003"
          }
       }
@@ -57,5 +57,5 @@
          "url" : "git://github.com/karpet/search-opensearch-engine-lucy-perl.git"
       }
    },
-   "version" : "0.13"
+   "version" : "0.14"
 }

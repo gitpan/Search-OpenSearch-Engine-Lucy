@@ -15,7 +15,7 @@ use Path::Class::Dir;
 use SWISH::3 qw(:constants);
 use Search::Tools;
 
-our $VERSION = '0.13';
+our $VERSION = '0.14';
 
 __PACKAGE__->mk_accessors(
     qw(
@@ -376,8 +376,9 @@ sub _analyze_uri_string {
 }
 
 sub GET {
-    my $self = shift;
-    my $uri = shift or croak "uri required";
+    my $self   = shift;
+    my $uri    = shift or croak "uri required";
+    my $params = shift;                           # undef ok
 
     # use internal Lucy searcher directly to avoid needing MetaName defined
     my $q = Lucy::Search::PhraseQuery->new(
@@ -408,6 +409,29 @@ sub GET {
     }
     $doc{title}   = $hitdoc->{swishtitle};
     $doc{summary} = $hitdoc->{swishdescription};
+
+    # highlight query string if present
+    if ( $params and $params->{q} ) {
+        my %hiliter_config = %{ $self->hiliter_config };
+        my %parser_config  = %{ $self->parser_config };
+        my $query
+            = Search::Tools->parser(%parser_config)->parse( $params->{q} );
+        my $hiliter
+            = Search::Tools->hiliter( query => $query, %hiliter_config );
+
+        for my $f ( keys %doc ) {
+            if ( ref $doc{$f} ) {
+                my @hv;
+                for my $v ( @{ $doc{$f} } ) {
+                    push @hv, $hiliter->light($v);
+                }
+                $doc{$f} = \@hv;
+            }
+            else {
+                $doc{$f} = $hiliter->light( $doc{$f} );
+            }
+        }
+    }
 
     my $ret = {
         code => 200,
@@ -465,7 +489,7 @@ Search::OpenSearch::Engine::Lucy - Lucy server with OpenSearch results
  );
  my $response = $engine->search(
     q           => 'quick brown fox',   # query
-    s           => 'rank desc',         # sort order
+    s           => 'score desc',        # sort order
     o           => 0,                   # offset
     p           => 25,                  # page size
     h           => 1,                   # highlight query terms in results
