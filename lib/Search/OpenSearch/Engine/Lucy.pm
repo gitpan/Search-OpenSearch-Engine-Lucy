@@ -15,7 +15,7 @@ use Path::Class::Dir;
 use SWISH::3 qw(:constants);
 use Search::Tools;
 
-our $VERSION = '0.14';
+our $VERSION = '0.16';
 
 __PACKAGE__->mk_accessors(
     qw(
@@ -26,6 +26,8 @@ __PACKAGE__->mk_accessors(
 
 use Rose::Object::MakeMethods::Generic ( 'scalar --get_set_init' => 'indexer',
 );
+
+sub type { 'Lucy' }
 
 sub init {
     my $self = shift;
@@ -420,6 +422,7 @@ sub GET {
             = Search::Tools->hiliter( query => $query, %hiliter_config );
 
         for my $f ( keys %doc ) {
+            next if $self->no_hiliting($f);
             if ( ref $doc{$f} ) {
                 my @hv;
                 for my $v ( @{ $doc{$f} } ) {
@@ -504,6 +507,10 @@ Search::OpenSearch::Engine::Lucy - Lucy server with OpenSearch results
  print $response;
 
 =head1 METHODS
+
+=head2 type
+
+Returns C<Lucy>.
 
 =head2 aggregator_class
 
