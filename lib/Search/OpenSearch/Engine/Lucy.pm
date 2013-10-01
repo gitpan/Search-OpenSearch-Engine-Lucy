@@ -15,7 +15,7 @@ use Path::Class::Dir;
 use SWISH::3 qw(:constants);
 use Search::Tools;
 
-our $VERSION = '0.16';
+our $VERSION = '0.17';
 
 __PACKAGE__->mk_accessors(
     qw(
@@ -485,7 +485,7 @@ Search::OpenSearch::Engine::Lucy - Lucy server with OpenSearch results
     ),
     cache_ttl       => 3600,
     do_not_hilite   => [qw( color )],
-    snipper_config  => { as_sentences => 1 },        # see Search::Tools::Snipper
+    snipper_config  => { as_sentences => 1, strip_markup => 1, }, # see Search::Tools::Snipper
     hiliter_config  => { class => 'h', tag => 'b' }, # see Search::Tools::HiLiter
     parser_config   => {},                           # see Search::Query::Parser
     
