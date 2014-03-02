@@ -32,4 +32,4 @@ resources:
   homepage: https://github.com/karpet/search-opensearch-engine-lucy-perl
   license: http://dev.perl.org/licenses/
   repository: git://github.com/karpet/search-opensearch-engine-lucy-perl.git
-version: 0.18
+version: 0.19
