@@ -14,8 +14,9 @@ use Class::Load;
 use Path::Class::Dir;
 use SWISH::3 qw(:constants);
 use Search::Tools;
+use Try::Tiny;
 
-our $VERSION = '0.299_01';
+our $VERSION = '0.299_02';
 
 has 'aggregator_class' =>
     ( is => 'rw', isa => Str, default => sub {'SWISH::Prog::Aggregator'} );
@@ -31,7 +32,7 @@ sub BUILD {
 
 sub init_searcher {
     my $self     = shift;
-    my $index    = $self->index or croak "index not defined";
+    my $index    = $self->index or confess "index not defined";
     my $searcher = SWISH::Prog::Lucy::Searcher->new(
         invindex => [@$index],      # copy so that suggester can use strings
         debug    => $self->debug,
@@ -52,19 +53,22 @@ sub init_suggester {
 
     # Text::Aspell is optional, so verify we have it
     # before claiming to have a Suggester.
-    eval {
+    my $has_suggester = try {
         require LucyX::Suggester;
         $conf{spellcheck} = Search::Tools->spellcheck(%$spellcheck_conf);
         if ( $ENV{TEST_SPELLCHECK_MISSING} ) {
             die "testing missing spellcheck";
         }
-    };
-    if ($@) {
-        if ( $self->debug and $self->logger ) {
-            $self->logger->log("Failed to load LucyX::Suggester: $@");
-        }
-        return;
+        return 1;
     }
+    catch {
+        if ( $self->debug and $self->logger ) {
+            $self->logger->log("Failed to load LucyX::Suggester: $_");
+        }
+        return 0;
+    };
+    return unless $has_suggester;
+
     my $suggester = LucyX::Suggester->new(
         indexes => $self->index,
         debug   => $self->debug,
@@ -253,16 +257,30 @@ sub PUT {
     return { code => 201, total => $total, doc => $exists->{doc} };
 }
 
+sub _get_indexer {
+    my $self = shift;
+
+    # autocommit means we must manage our own indexer
+    # since we want to invalidate and re-create
+
+    if ( $self->auto_commit ) {
+        return $self->init_indexer();
+    }
+
+    # did we have an indexer and it was invalidated? get new one.
+    if ( !$self->indexer ) {
+        $self->indexer( $self->init_indexer );
+    }
+    return $self->indexer;
+}
+
 # POST allows new and updates
 sub POST {
-    my $self = shift;
-    my $req  = shift or croak "request required";
-    my $doc  = $self->_massage_rest_req_into_doc($req);
-    my $uri  = $doc->url;
-    my $indexer
-        = $self->auto_commit
-        ? $self->init_indexer()
-        : $self->indexer();
+    my $self    = shift;
+    my $req     = shift or croak "request required";
+    my $doc     = $self->_massage_rest_req_into_doc($req);
+    my $uri     = $doc->url;
+    my $indexer = $self->_get_indexer;
     $indexer->process($doc);
 
     if ( !$self->auto_commit ) {
@@ -285,6 +303,12 @@ sub COMMIT {
         return { code => 400 };
     }
     my $indexer = $self->indexer();
+
+    # is it possible to get here? croak just in case.
+    if ( !$indexer ) {
+        confess "Can't call COMMIT on an undefined indexer";
+    }
+
     if ( my $total = $indexer->count() ) {
         $indexer->finish();
 
@@ -321,10 +345,7 @@ sub DELETE {
             msg  => "$uri cannot be deleted because it does not exist"
         };
     }
-    my $indexer
-        = $self->auto_commit
-        ? $self->init_indexer()
-        : $self->indexer;
+    my $indexer = $self->_get_indexer();
     $indexer->get_lucy->delete_by_term(
         field => 'swishdocpath',
         term  => $uri,

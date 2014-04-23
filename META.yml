@@ -7,7 +7,7 @@ build_requires:
 configure_requires:
   ExtUtils::MakeMaker: '0'
 dynamic_config: 1
-generated_by: 'ExtUtils::MakeMaker version 6.6302, CPAN::Meta::Converter version 2.120630'
+generated_by: 'ExtUtils::MakeMaker version 6.6302, CPAN::Meta::Converter version 2.140640'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -24,7 +24,7 @@ requires:
   Path::Class: '0'
   SWISH::Prog: '0.64'
   SWISH::Prog::Lucy: '0.11'
-  Search::OpenSearch: 0.399_01
+  Search::OpenSearch: 0.399_03
   Search::Tools: '1.000'
   Test::More: '0'
   Type::Tiny: '0'
@@ -34,4 +34,4 @@ resources:
   homepage: https://github.com/karpet/search-opensearch-engine-lucy-perl
   license: http://dev.perl.org/licenses/
   repository: git://github.com/karpet/search-opensearch-engine-lucy-perl.git
-version: 0.299_01
+version: 0.299_02
