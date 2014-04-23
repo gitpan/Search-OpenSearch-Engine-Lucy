@@ -3,33 +3,35 @@ abstract: 'Lucy server with OpenSearch results'
 author:
   - 'Peter Karman <karman@cpan.org>'
 build_requires:
-  ExtUtils::MakeMaker: 0
+  ExtUtils::MakeMaker: '0'
 configure_requires:
-  ExtUtils::MakeMaker: 0
+  ExtUtils::MakeMaker: '0'
 dynamic_config: 1
-generated_by: 'ExtUtils::MakeMaker version 6.62, CPAN::Meta::Converter version 2.132510'
+generated_by: 'ExtUtils::MakeMaker version 6.6302, CPAN::Meta::Converter version 2.120630'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
-  version: 1.4
+  version: '1.4'
 name: Search-OpenSearch-Engine-Lucy
 no_index:
   directory:
     - t
     - inc
 requires:
-  JSON: 2
-  Module::Load: 0
-  Path::Class: 0
-  SWISH::Prog: 0.64
-  SWISH::Prog::Lucy: 0.11
-  Search::OpenSearch: 0.23
-  Search::Tools: 0.86
-  Test::More: 0
-  perl: 5.008003
+  Class::Load: '0'
+  JSON: '2'
+  Moose: '0'
+  Path::Class: '0'
+  SWISH::Prog: '0.64'
+  SWISH::Prog::Lucy: '0.11'
+  Search::OpenSearch: 0.399_01
+  Search::Tools: '1.000'
+  Test::More: '0'
+  Type::Tiny: '0'
+  perl: '5.008003'
 resources:
   bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=Search-OpenSearch-Engine-Lucy
   homepage: https://github.com/karpet/search-opensearch-engine-lucy-perl
   license: http://dev.perl.org/licenses/
   repository: git://github.com/karpet/search-opensearch-engine-lucy-perl.git
-version: 0.19
+version: 0.299_01
