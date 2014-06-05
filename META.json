@@ -39,6 +39,7 @@
             "SWISH::Prog" : "0.64",
             "SWISH::Prog::Lucy" : "0.11",
             "Search::OpenSearch" : "0.399_03",
+            "Search::Query::Dialect::Lucy" : "0.200",
             "Search::Tools" : "1.000",
             "Test::More" : "0",
             "Type::Tiny" : "0",
@@ -59,5 +60,5 @@
          "url" : "git://github.com/karpet/search-opensearch-engine-lucy-perl.git"
       }
    },
-   "version" : "0.299_02"
+   "version" : "0.299_03"
 }

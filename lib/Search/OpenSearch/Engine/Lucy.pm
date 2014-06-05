@@ -16,7 +16,7 @@ use SWISH::3 qw(:constants);
 use Search::Tools;
 use Try::Tiny;
 
-our $VERSION = '0.299_02';
+our $VERSION = '0.299_03';
 
 has 'aggregator_class' =>
     ( is => 'rw', isa => Str, default => sub {'SWISH::Prog::Aggregator'} );
@@ -205,13 +205,22 @@ sub _massage_rest_req_into_doc {
 
 sub init_indexer {
     my $self = shift;
+    my $idx = shift || 0;
+
+    if ( $idx =~ m/\D/ ) {
+        confess "idx must be an integer for reading into array of index()";
+    }
+    if ( $idx > scalar @{ $self->index } ) {
+        confess sprintf( "idx %d > than index array size %d",
+            $idx, scalar @{ $self->index } );
+    }
 
     # unlike a Searcher, which has an array of invindex objects,
     # the Indexer wants only one. We take the first by default,
     # but a subclass could do more subtle logic here.
 
     my $indexer = SWISH::Prog::Lucy::Indexer->new(
-        invindex => $self->index->[0],
+        invindex => $self->index->[$idx],
         debug    => $self->debug,
         %{ $self->indexer_config },
     );
@@ -219,6 +228,7 @@ sub init_indexer {
 }
 
 # PUT only if it does not yet exist
+# note PUT operates only on first index if there are multiple.
 sub PUT {
     my $self = shift;
     my $req  = shift or croak "request required";
@@ -264,17 +274,18 @@ sub _get_indexer {
     # since we want to invalidate and re-create
 
     if ( $self->auto_commit ) {
-        return $self->init_indexer();
+        return $self->init_indexer(@_);
     }
 
     # did we have an indexer and it was invalidated? get new one.
     if ( !$self->indexer ) {
-        $self->indexer( $self->init_indexer );
+        $self->indexer( $self->init_indexer(@_) );
     }
     return $self->indexer;
 }
 
 # POST allows new and updates
+# note POST operates only on first index if there are multiple
 sub POST {
     my $self    = shift;
     my $req     = shift or croak "request required";
@@ -345,17 +356,20 @@ sub DELETE {
             msg  => "$uri cannot be deleted because it does not exist"
         };
     }
-    my $indexer = $self->_get_indexer();
-    $indexer->get_lucy->delete_by_term(
-        field => 'swishdocpath',
-        term  => $uri,
-    );
 
+    my $i = 0;
+    for my $idx ( @{ $self->index } ) {
+        my $indexer = $self->_get_indexer( $i++ );
+        $indexer->get_lucy->delete_by_term(
+            field => 'swishdocpath',
+            term  => $uri,
+        );
+        next unless $self->auto_commit;
+        $indexer->finish();
+    }
     if ( !$self->auto_commit ) {
         return { code => 202 };
     }
-
-    $indexer->finish();
     return { code => 200, };
 }
 
@@ -582,11 +596,19 @@ names.
 
 =head2 PUT( I<doc> )
 
+Writes I<doc> to the first index defined. I<doc> must already exist.
+
 =head2 POST( I<doc> )
+
+Writes I<doc> to the first index defined. I<doc> may be new or already exist.
 
 =head2 DELETE( I<uri> )
 
+Deletes I<uri> from all indexes.
+
 =head2 GET( I<uri> )
+
+Fetches I<uri> from all indexes.
 
 =head2 COMMIT
 
