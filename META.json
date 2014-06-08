@@ -38,7 +38,7 @@
             "Path::Class" : "0",
             "SWISH::Prog" : "0.64",
             "SWISH::Prog::Lucy" : "0.11",
-            "Search::OpenSearch" : "0.399_03",
+            "Search::OpenSearch" : "0.400",
             "Search::Query::Dialect::Lucy" : "0.200",
             "Search::Tools" : "1.000",
             "Test::More" : "0",
@@ -47,7 +47,7 @@
          }
       }
    },
-   "release_status" : "testing",
+   "release_status" : "stable",
    "resources" : {
       "bugtracker" : {
          "web" : "http://rt.cpan.org/NoAuth/Bugs.html?Dist=Search-OpenSearch-Engine-Lucy"
@@ -60,5 +60,5 @@
          "url" : "git://github.com/karpet/search-opensearch-engine-lucy-perl.git"
       }
    },
-   "version" : "0.299_03"
+   "version" : "0.300"
 }
