@@ -19,11 +19,10 @@ no_index:
     - inc
 requires:
   Class::Load: '0'
+  Dezi::App: '0.004'
   JSON: '2'
   Moose: '0'
   Path::Class: '0'
-  SWISH::Prog: '0.64'
-  SWISH::Prog::Lucy: '0.11'
   Search::OpenSearch: '0.400'
   Search::Query::Dialect::Lucy: '0.200'
   Search::Tools: '1.000'
@@ -35,4 +34,4 @@ resources:
   homepage: https://github.com/karpet/search-opensearch-engine-lucy-perl
   license: http://dev.perl.org/licenses/
   repository: git://github.com/karpet/search-opensearch-engine-lucy-perl.git
-version: '0.300'
+version: '0.400'
